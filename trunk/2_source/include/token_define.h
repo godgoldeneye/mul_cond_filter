@@ -1,0 +1,55 @@
+
+
+/*
+ * 文件名:
+ *   定义多条件过滤(mul_cond_filter)规则用到的token,包括运算符等;
+ * */
+
+#ifndef __TOKEN_DEFINE_H_
+
+#define __TOKEN_DEFINE_H_
+
+//定义token,token包括种类、原始字符、值
+typedef struct _st_token_
+{
+   int  token_type;//记号种类
+   char token_orig_str[256];
+   char token_value[256];
+}ST_TOKEN;
+
+
+//逻辑运算符
+#define OP_LOGIC_AND  "&&"
+#define OP_LOGIC_OR   "||"
+#define OP_LOGIC_NOT  "!"
+//条件运算符
+#define OP_COND_GT    ">"
+#define OP_COND_GE    ">="
+#define OP_COND_LT    "<"
+#define OP_COND_LE    "<="
+#define OP_COND_NE    "!="
+#define OP_COND_EQ    "=="
+#define OP_COND_FUZZY "~=" //fuzzy match
+
+//关键字
+#define TK_KW_TIME  "time" //时间
+#define TK_KW_TID   "tid"  //tid
+#define TK_KW_FID   "fid"  //field_id
+#define TK_KW_FNAME "fld_name" //数据包名
+
+//特殊字符
+#define TK_CHAR_ESC      "\\" //escape character 转义符
+#define TK_CHAR_WILDCARD '*' //wildcard character 通配符
+#define TK_CHAR_SPACE    " " //space 空格
+#define TK_CHAR_TAB      "\t" //tab character
+#define TK_CHAR_PARENTHESE_LEFT "(" //left parenthese 左小括号
+#define TK_CHAR_PARENTHESE__RIGHT ")" //right parenthese 右小括号
+#define TK_CHAR_SQUARE_BRACKET_LEFT "]" //中括号
+#define TK_CHAR_SQUARE_BRACKET_RIGHT "]" //中括号
+//#define TK_CHAR_ANGLE_BRACKET "<>" //尖括号
+//#define TK_CHAR_BRACES  "{}" //大括号
+
+#define TK_CHAR_COLON  ":" //冒号
+
+#endif
+
