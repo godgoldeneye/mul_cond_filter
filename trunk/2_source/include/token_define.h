@@ -1,5 +1,3 @@
-
-
 /*
  * 文件名:
  *   定义多条件过滤(mul_cond_filter)规则用到的token,包括运算符等;
@@ -9,11 +7,31 @@
 
 #define __TOKEN_DEFINE_H_
 
+//定义token类型
+typedef enum {
+    TKN_BAD,
+    TKN_AND,
+    TKN_OR,
+    TKN_NOT,
+    
+    TKN_GT,
+    TKN_GE,
+    TKN_LT,
+    TKN_LE,
+    TKN_NE,
+    TKN_EQ,
+    TKN_FUZZY,
+    TKN_VARIABLE, //变量,以$开头
+    TKN_CONST_STR  //常量,无类型
+}TokenKind;
+
+#define MAX_TOKEN_SIZE (256)
+
 //定义token,token包括种类、原始字符、值
 typedef struct _st_token_
 {
-   int  token_type;//记号种类
-   char token_orig_str[256];
+   TokenKind  token_type;//记号种类
+   char token_orig_str[MAX_TOKEN_SIZE];
    char token_value[256];
 }ST_TOKEN;
 
