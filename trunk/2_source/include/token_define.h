@@ -56,18 +56,19 @@ typedef struct _st_token_
 #define TK_KW_FNAME "fld_name" //数据包名
 
 //特殊字符
-#define TK_CHAR_ESC      "\\" //escape character 转义符
+#define TK_CHAR_ESC      '\\' //escape character 转义符
 #define TK_CHAR_WILDCARD '*' //wildcard character 通配符
-#define TK_CHAR_SPACE    " " //space 空格
-#define TK_CHAR_TAB      "\t" //tab character
-#define TK_CHAR_PARENTHESE_LEFT "(" //left parenthese 左小括号
-#define TK_CHAR_PARENTHESE__RIGHT ")" //right parenthese 右小括号
-#define TK_CHAR_SQUARE_BRACKET_LEFT "]" //中括号
-#define TK_CHAR_SQUARE_BRACKET_RIGHT "]" //中括号
+#define TK_CHAR_SPACE    ' ' //space 空格
+#define TK_CHAR_TAB      '\t' //tab character
+#define TK_CHAR_PARENTHESE_LEFT '(' //left parenthese 左小括号
+#define TK_CHAR_PARENTHESE__RIGHT ')' //right parenthese 右小括号
+#define TK_CHAR_SQUARE_BRACKET_LEFT ']' //中括号
+#define TK_CHAR_SQUARE_BRACKET_RIGHT ']' //中括号
 //#define TK_CHAR_ANGLE_BRACKET "<>" //尖括号
 //#define TK_CHAR_BRACES  "{}" //大括号
 
-#define TK_CHAR_COLON  ":" //冒号
+#define TK_CHAR_COLON  ':' //冒号
+//#define TK_CHAR_AT     '@'
 
 #endif
 
