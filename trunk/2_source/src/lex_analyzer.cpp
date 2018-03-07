@@ -47,11 +47,49 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
         // }
         if(IN_VARIABLE==lex_status)
         {
-            if(!(isalpha(current_char) || isdigit(current_char) || '_'==current_char))
+            //变量命名规则:数字、字母、下划线
+            if(isalpha(current_char) || isdigit(current_char) || '_'==current_char)
             {
-                if(NULL!=errCode) 
+                token_ptr->token_orig_str[out_pos]=current_char;
+				++out_pos;
+				++m_cur_pos;
+				continue;
+            }
+			else if(NULL!=strchr(" \t()=><!~[]\"\r\n")) //碰到这几个字符,意味变量定义结束
+			{
+			    //++m_cur_pos; //位置不能递增
+			    return SUCC_CODE;
+			}
+			else
+            {
+                if(NULL!=errCode) *errrCode=-1001;
+				if(NULL!=szMsg)    sprintf(szMsg, "位置[%d]处不符合变量命名规则");
             }
         }
+		else if(IN_CONST_STR==lex_status)
+		{
+		    if(NULL!=strchr(" \t()=><!~[]\"\r\n")) //碰到这几个字符,意味字符串定义结束
+		    {
+		        //++m_cur_pos; //位置不能递增
+		        return SUCC_CODE;
+		    }
+			else
+		    {
+		        token_ptr->token_orig_str[out_pos]=current_char;
+			    ++out_pos;
+			    ++m_cur_pos;
+				continue;
+		    }
+		}
+		else if('@'==current_char)
+		{
+		    if(INITIAL_STATUS==lex_status)
+		    {
+		        token->token_type = IN_VARIABLE;
+				++m_cur_pos;
+				continue;
+		    }
+		}
     }
 }
 

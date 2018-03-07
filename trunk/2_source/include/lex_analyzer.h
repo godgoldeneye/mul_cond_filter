@@ -1,8 +1,7 @@
 #ifndef __LEX_ANALYZER_H_
 #define __LEX_ANALYZER_H_
 
-#define CHAR_AT '@'
-
+#define SUCC_CODE 0
 //定义词法分析器状态
 typedef enum {
     BAT_TOKEN,
