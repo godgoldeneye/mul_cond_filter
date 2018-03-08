@@ -1,13 +1,18 @@
 #ifndef __LEX_ANALYZER_H_
 #define __LEX_ANALYZER_H_
 
+#include "token_define.h"
+
 #define SUCC_CODE 0
+#define ERR_CODE -1
 //定义词法分析器状态
 typedef enum {
     BAT_TOKEN,
     INIT_STATUS,
     IN_VARIABLE, //读取变量
     IN_CONST_STR, //读取常量
+    IN_STR_SINGLE_QUOTE,//单引号字符串
+    IN_STR_DOUBLE_QUOTE,//双引号字符串
     IN_LOGIC,     //逻辑运算符
     IN_COND       //条件运算符
 }LexerStatus;

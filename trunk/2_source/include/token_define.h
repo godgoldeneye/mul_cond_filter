@@ -1,7 +1,7 @@
-/*
+/**
  * 文件名:
  *   定义多条件过滤(mul_cond_filter)规则用到的token,包括运算符等;
- * */
+ **/
 
 #ifndef __TOKEN_DEFINE_H_
 
@@ -22,7 +22,10 @@ typedef enum {
     TKN_EQ,
     TKN_FUZZY,
     TKN_VARIABLE, //变量,以$开头
-    TKN_CONST_STR  //常量,无类型
+    TKN_CONST_STR,  //常量,无类型
+    TKN_STRING,//字符串
+    TKN_PARENTHESE_LEFT, //'('
+    TKN_PARENTHESE__RIGHT //'('
 }TokenKind;
 
 #define MAX_TOKEN_SIZE (256)
@@ -56,18 +59,18 @@ typedef struct _st_token_
 #define TK_KW_FNAME "fld_name" //数据包名
 
 //特殊字符
-#define TK_CHAR_ESC      '\\' //escape character 转义符
-#define TK_CHAR_WILDCARD '*' //wildcard character 通配符
-#define TK_CHAR_SPACE    ' ' //space 空格
-#define TK_CHAR_TAB      '\t' //tab character
-#define TK_CHAR_PARENTHESE_LEFT '(' //left parenthese 左小括号
-#define TK_CHAR_PARENTHESE__RIGHT ')' //right parenthese 右小括号
-#define TK_CHAR_SQUARE_BRACKET_LEFT ']' //中括号
+#define TK_CHAR_ESC                  '\\' //escape character 转义符
+#define TK_CHAR_WILDCARD             '*' //wildcard character 通配符
+#define TK_CHAR_SPACE                ' ' //space 空格
+#define TK_CHAR_TAB                  '\t' //tab character
+#define TK_CHAR_PARENTHESE_LEFT      '(' //left parenthese 左小括号
+#define TK_CHAR_PARENTHESE__RIGHT    ')' //right parenthese 右小括号
+#define TK_CHAR_SQUARE_BRACKET_LEFT  ']' //中括号
 #define TK_CHAR_SQUARE_BRACKET_RIGHT ']' //中括号
 //#define TK_CHAR_ANGLE_BRACKET "<>" //尖括号
 //#define TK_CHAR_BRACES  "{}" //大括号
 
-#define TK_CHAR_COLON  ':' //冒号
+#define TK_CHAR_COLON                ':' //冒号
 //#define TK_CHAR_AT     '@'
 
 #endif
