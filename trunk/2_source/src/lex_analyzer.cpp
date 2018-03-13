@@ -270,5 +270,8 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 	return SUCC_CODE;
 }
 
+int LexAnalyzer::scan_opertator(ST_TOKEN *token, int *errCode, char *szMsg)
+{
+}
 
 

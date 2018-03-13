@@ -27,8 +27,37 @@ class LexAnalyzer
     //获取下一个token
     int get_next_token(ST_TOKEN *token);
   private:
+  	bool is_end(const char *iter)
+  	{
+  	    return (m_end_iter==iter);
+  	}
+	bool is_comment_start(const char *iter)
+  	{
+        return false;
+	}
+
+	void skip_comments() 
+	{
+	    //注释格式
+	    //  1. //...\n
+	    //  2. # ...\n
+	    //  3. /*...*/\n
+	}
+	void skip_whitespace()
+	{
+	    if(!is_end(m_iter) &&token_detail::is_whitespace(*m_iter))
+	    {
+	        ++m_iter;
+	    }
+	}
+	
+  private:
     char m_expression_str[1024];//表达式字符串
     int  m_cur_pos;//当前词法分析位置
+
+	const char *m_iter;
+	const char *m_head_iter;
+	const char *m_end_iter;
 };
 
 #endif
