@@ -26,6 +26,9 @@ class LexAnalyzer
     int set_expression(char *express_str);
     //获取下一个token
     int get_next_token(ST_TOKEN *token);
+  public:
+  	//另一种扫描获取token方式
+  	int scan_token();
   private:
   	bool is_end(const char *iter)
   	{

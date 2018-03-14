@@ -9,6 +9,7 @@
 
 //定义token类型
 typedef enum {
+    TKN_NONE,//不是任何token
     TKN_BAD,
     TKN_AND,
     TKN_OR,
@@ -21,11 +22,13 @@ typedef enum {
     TKN_NE,
     TKN_EQ,
     TKN_FUZZY,
-    TKN_VARIABLE, //变量,以$开头
-    TKN_CONST_STR,  //常量,无类型
-    TKN_STRING,//字符串
+    TKN_SYMBOL, //变量,以$开头
+    TKN_CONST_STR,  //常量,无类型,即词法解析器无法确定是symbol还是字符串
+    TKN_STRING,//字符串,使用单引号或双引号
     TKN_PARENTHESE_LEFT, //'('
-    TKN_PARENTHESE__RIGHT //'('
+    TKN_PARENTHESE__RIGHT, //'('
+
+	TKN_ERR_SYMBOL,//错误符号
 }TokenKind;
 
 #define MAX_TOKEN_SIZE (256)
@@ -36,6 +39,7 @@ typedef struct _st_token_
    TokenKind  token_type;//记号种类
    char token_orig_str[MAX_TOKEN_SIZE];
    char token_value[256];
+   int  pos;
 }ST_TOKEN;
 
 

@@ -61,7 +61,7 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 			else if(NULL!=strchr(" \t()=><!~[]\"\r\n")) //碰到这几个字符,意味变量定义结束
 			{
 			    //++m_cur_pos; //位置不能递增
-			    token->token_type = TKN_VARIABLE;
+			    token->token_type = TKN_SYMBOL;
 			    return SUCC_CODE;
 			}
 			else
@@ -272,6 +272,124 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 
 int LexAnalyzer::scan_opertator(ST_TOKEN *token, int *errCode, char *szMsg)
 {
+    memset(token, 0, sizeof(ST_TOKEN));
+	
+    const char c0=m_iter[0];
+	if(!is_end(m_iter+1))//还有后续符号
+	{
+	    const char c1=m_iter[1];
+		//不支持交换符号"<=>",故c2暂时不做判断
+		token->token_type = 
+		
+	}
+	
+	
 }
+
+int LexAnalyzer::scan_symbol(ST_TOKEN *token, int *errCode, char *szMsg)
+{
+    /*
+     * 符号只能由数字、字母、下划线组成
+     */
+    memset(token, 0, sizeof(ST_TOKEN));
+	if(is_end(m_iter))
+		return -1;
+	if(*m_iter!='@')
+		return -2;
+	++m_iter;
+	
+	const char *init_iter = m_iter;
+	while(!is_end(m_iter))
+	{
+	    if((!token_detail::is_letter_or_digit(const char_t c)) && ('_'!=m_iter))
+			break;
+
+		++m_iter;
+	}
+
+
+	token->token_type = TKN_SYMBOL;
+	strncpy(token->token_value, init_iter, std::distance(m_iter, init_iter));
+	token->pos = std::distance(init_iter, m_expression_str);
+	return SUCC_CODE;
+}
+
+int LexAnalyzer::scan_string(ST_TOKEN *token, int *errCode, char *szMsg)
+{
+    /*
+     * 格式:
+     *    1. "string value" //使用双引号包括
+     *    2. 'string value' //使用单引号包括
+     *    3.  stringvalue    //不使用单引号和双引号,使用空白字符、操作符等特殊符号分割
+     */
+    memset(token, 0, sizeof(ST_TOKEN));
+	if(is_end(m_iter))
+		return -1;
+	LexerStatus lex_status = INIT_STATUS;
+	if('\''==*m_iter!)
+	{
+		lex_status = IN_STR_SINGLE_QUOTE;
+		++m_iter;
+	}
+	else if('"'==*m_iter)
+	{
+	    lex_status=IN_STR_DOUBLE_QUOTE;
+		++m_iter;
+	}
+	
+	
+	const char *init_iter = m_iter;
+	if(IN_STR_SINGLE_QUOTE==lex_status)//单引号包括字符串
+	{
+	    while(!is_end(*m_iter))
+	    {
+	        if('\''==*m_iter)//另一个单引号
+				break;
+			if(('\r' == *m_iter) || ('\n'==*m_iter))
+				break;
+			
+	        ++m_iter;
+	    }
+	}
+	else if(IN_STR_DOUBLE_QUOTE==lex_status)//双括号包括字符串
+	{
+	    while(!is_end(*m_iter))
+	    {
+	        if('"'==*m_iter)//另一个单引号
+				break;
+			if(('\r' == *m_iter) || ('\n'==*m_iter))
+				break;
+			
+	        ++m_iter;
+	    }
+	}
+	else
+	{
+	    while(!is_end(*m_iter))
+	    {
+	        if(token_detail::is_whitespace(*m_iter))
+				break;
+			if(token_detail::is_operator_char(*m_iter))
+				break;
+			
+	        ++m_iter;
+	    }
+	}
+
+    if((IN_STR_SINGLE_QUOTE==lex_status) || if(IN_DOUBLE_QUOTE==lex_status))
+    {
+	    token->token_type = TKN_STRING;
+	    strncpy(token->token_value, init_iter, std::distance(m_iter, init_iter));
+	    token->pos = std::distance(init_iter, m_expression_str);
+    }
+	else
+	{
+	    token->token_type = TKN_CONST_STR;
+	    strncpy(token->token_value, init_iter, std::distance(m_iter, init_iter));
+	    token->pos = std::distance(init_iter, m_expression_str);
+    }
+	return SUCC_CODE;
+}
+
 
 
