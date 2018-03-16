@@ -92,7 +92,7 @@ LINK_FLAGS =  #-isystem
 endif
 
 #汇总所有的源文件
-TARGET:=self_prog
+TARGET:=mxx_lexer
 #输出路径
 OUTPUT_DIR:=./bin
 all:$(TARGET)
@@ -119,6 +119,9 @@ $(TARGET):$(OBJS)
 $(COMMON_OBJS): %.o:%.cpp
 	$(GCC) -o $@ $(DCPPFLAGS) $(CFLAGS) $(INCLUDES) $<
 
+$(PRJ_SOURCES:.cpp=.o): %.o:%.cpp
+	$(GCC) -o $@ $(DCPPFLAGS) $(CFLAGS) $(INCLUDES) $<
+    
 %.o: %.c
 	$(CC) ${DCPPFLAGS}  ${CFLAGS}   ${INCLUDES} $<
 %.o: %.C

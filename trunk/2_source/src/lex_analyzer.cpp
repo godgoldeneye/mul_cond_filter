@@ -1,13 +1,18 @@
 
 #include <string.h>
-include "lex_analyzer.h"
+#include <ctype.h>
+#include <stdio.h>
 
-LexAnalyzer::LexAnalyzer(char *express_str/*=NULL*/)
+#include <iterator>
+
+#include "lex_analyzer.h"
+
+LexAnalyzer::LexAnalyzer(char *express_str)
 {
     m_cur_pos = 0;
     memset(m_expression_str, 0, sizeof(m_expression_str));
     if(NULL!=express_str)
-        strncpy(m_expression_str, express_str);
+        strncpy(m_expression_str, express_str, sizeof(m_expression_str)-1);
 }
 
 int LexAnalyzer::set_expression(char *express_str/*=NULL*/)
@@ -15,7 +20,7 @@ int LexAnalyzer::set_expression(char *express_str/*=NULL*/)
     m_cur_pos = 0;
     memset(m_expression_str, 0, sizeof(m_expression_str));
     if(NULL!=express_str)
-        strncpy(m_expression_str, express_str);
+        strncpy(m_expression_str, express_str, sizeof(m_expression_str)-1);
     return 0;
 }
 
@@ -25,11 +30,11 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
         return -1;
     
     int out_pos=0;
-    LexerStatus lex_status=INITIAL_STATUS;
+    LexerStatus lex_status=INIT_STATUS;
     char current_char;
     
     ST_TOKEN *token_ptr=token;
-    token_ptr->token_type = BAT_TOKEN;//初始状态没有token;
+    token_ptr->token_type = TKN_NONE;//初始状态没有token;
     while(m_expression_str[m_cur_pos]!='\0')
     {
         current_char=m_expression_str[m_cur_pos];
@@ -58,7 +63,7 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 				++m_cur_pos;
 				continue;
             }
-			else if(NULL!=strchr(" \t()=><!~[]\"\r\n")) //碰到这几个字符,意味变量定义结束
+			else if(NULL!=strchr(" \t()=><!~[]\"\r\n", current_char)) //碰到这几个字符,意味变量定义结束
 			{
 			    //++m_cur_pos; //位置不能递增
 			    token->token_type = TKN_SYMBOL;
@@ -66,8 +71,8 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 			}
 			else
             {
-                token_ptr->token_type = BAT_TOKEN;
-                if(NULL!=errCode) *errrCode=-1001;
+                token_ptr->token_type = TKN_BAD;
+                if(NULL!=errCode) *errCode=-1001;
 				if(NULL!=szMsg)    sprintf(szMsg, "位置[%d]处不符合变量命名规则",m_cur_pos);
 				return ERR_CODE;
             }
@@ -122,7 +127,7 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 		}
 		else if('\''==current_char)//单引号
 		{
-		    if(INITIAL_STATUS==lex_status)
+		    if(INIT_STATUS==lex_status)
 		    {
 		        lex_status = IN_STR_SINGLE_QUOTE;
 		        //token->token_type = TKN_VARIABLE;
@@ -132,7 +137,7 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 		}
 		else if('"'==current_char)
 		{
-		    if(INITIAL_STATUS==lex_status)
+		    if(INIT_STATUS==lex_status)
 		    {
 		        lex_status = IN_STR_DOUBLE_QUOTE;
 		        //token->token_type = TKN_VARIABLE;
@@ -142,7 +147,7 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 		}
 		else if('@'==current_char)
 		{
-		    if(INITIAL_STATUS==lex_status)
+		    if(INIT_STATUS==lex_status)
 		    {
 		        lex_status = IN_VARIABLE;
 		        //token->token_type = TKN_VARIABLE;
@@ -162,37 +167,37 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 			++m_cur_pos;
 		    return SUCC_CODE;
 		}
-		else if(strchar("<>=!~|&", current_char)!=NULL)
+		else if(strchr("<>=!~|&", current_char)!=NULL)
 		{
-		    if(0==strncmp(m_expression_str[m_cur_pos], ">=", 2))
+		    if(0==strncmp(m_expression_str+m_cur_pos, ">=", 2))
 		    {
 		        token->token_type = TKN_GE;
 				++m_cur_pos;
 				++m_cur_pos;
 				return SUCC_CODE;				
 		    }
-			else if(0==strncmp(m_expression_str[m_cur_pos], "==", 2))
+			else if(0==strncmp(m_expression_str+m_cur_pos, "==", 2))
 			{
 			    token->token_type = TKN_EQ;
 				++m_cur_pos;
 				++m_cur_pos;
 				return SUCC_CODE;	
 			}
-			else if(0==strncmp(m_expression_str[m_cur_pos], "!=", 2))
+			else if(0==strncmp(m_expression_str+m_cur_pos, "!=", 2))
 			{
 			    token->token_type = TKN_NE;
 				++m_cur_pos;
 				++m_cur_pos;
 				return SUCC_CODE;	
 			}
-			else if(0==strncmp(m_expression_str[m_cur_pos], "<=", 2))
+			else if(0==strncmp(m_expression_str+m_cur_pos, "<=", 2))
 			{
 			    token->token_type = TKN_LE;
 				++m_cur_pos;
 				++m_cur_pos;
 				return SUCC_CODE;	
 			}
-			else if(0==strncmp(m_expression_str[m_cur_pos], "~=", 2))//模糊匹配
+			else if(0==strncmp(m_expression_str+m_cur_pos, "~=", 2))//模糊匹配
 			{
 			    token->token_type = TKN_FUZZY;
 				++m_cur_pos;
@@ -217,14 +222,14 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 				++m_cur_pos;
 				return SUCC_CODE;
 			}
-			else if(0==strncmp(m_expression_str[m_cur_pos], "||", 2))
+			else if(0==strncmp(m_expression_str+m_cur_pos, "||", 2))
 			{
 			    token->token_type = TKN_OR;
 				++m_cur_pos;
 				++m_cur_pos;
 				return SUCC_CODE;	
 			}
-			else if(0==strncmp(m_expression_str[m_cur_pos], "&&", 2))
+			else if(0==strncmp(m_expression_str+m_cur_pos, "&&", 2))
 			{
 			    token->token_type = TKN_OR;
 				++m_cur_pos;
@@ -233,13 +238,13 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 			}
 			else
 			{
-			    token_ptr->token_type = BAT_TOKEN;
-                if(NULL!=errCode) *errrCode=-1002;
+			    token_ptr->token_type = TKN_BAD;
+                if(NULL!=errCode) *errCode=-1002;
 				if(NULL!=szMsg)    sprintf(szMsg, "位置[%d]处不符合词法规则", m_cur_pos);
 				return ERR_CODE;
 			}
 		}
-		else if (strchr(' \t\r\n', current_char)!=NULL)
+		else if (strchr(" \t\r\n", current_char)!=NULL)
 		{
 		    if(INIT_STATUS==lex_status)
 		    {
@@ -260,8 +265,8 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
         }
 		else
 		{
-		    token_ptr->token_type = BAT_TOKEN;
-            if(NULL!=errCode) *errrCode=-1003;
+		    token_ptr->token_type = TKN_BAD;
+            if(NULL!=errCode) *errCode=-1003;
 			if(NULL!=szMsg)    sprintf(szMsg, "位置[%d]处不符合词法规则", m_cur_pos);
 			return ERR_CODE;
 		}
@@ -270,7 +275,7 @@ int LexAnalyzer::get_next_token(ST_TOKEN *token, int *errCode, char *szMsg)
 	return SUCC_CODE;
 }
 
-int LexAnalyzer::scan_opertator(ST_TOKEN *token, int *errCode, char *szMsg)
+int LexAnalyzer::scan_operator(ST_TOKEN *token, int *errCode, char *szMsg)
 {
     memset(token, 0, sizeof(ST_TOKEN));
 	
@@ -279,11 +284,29 @@ int LexAnalyzer::scan_opertator(ST_TOKEN *token, int *errCode, char *szMsg)
 	{
 	    const char c1=m_iter[1];
 		//不支持交换符号"<=>",故c2暂时不做判断
-		token->token_type = 
-		
+		token->token_type = TKN_NONE;
+		if((c0 == '<') && (c1 == '='))      token->token_type = TKN_LE;
+		else if((c0 == '>') && (c1 == '=')) token->token_type = TKN_GE;
+		else if((c0 == '<') && (c1 == '>')) token->token_type = TKN_NE;
+		else if((c0 == '!') && (c1 == '=')) token->token_type = TKN_NE;
+		else if((c0 == '=') && (c1 == '=')) token->token_type = TKN_EQ;
+		else if((c0 == '&') && (c1 == '&')) token->token_type = TKN_AND;
+		else if((c0 == '|') && (c1 == '|')) token->token_type = TKN_OR;
+		if(TKN_NONE != token->token_type)
+		{
+	        strncpy(token->token_value, m_iter, 2);
+	        token->pos = std::distance(m_iter, (const char *)m_expression_str);
+			m_iter += 2;
+	       return SUCC_CODE;
+		}
 	}
+	if('<'==c0)      token->token_type = TKN_LT;
+	else if('>'==c0) token->token_type = TKN_GT;
+	else if('!'==c0) token->token_type = TKN_NOT;
 	
-	
+	token->pos = std::distance(m_iter, (const char *)m_expression_str);
+	++m_iter;
+	return SUCC_CODE;
 }
 
 int LexAnalyzer::scan_symbol(ST_TOKEN *token, int *errCode, char *szMsg)
@@ -301,7 +324,7 @@ int LexAnalyzer::scan_symbol(ST_TOKEN *token, int *errCode, char *szMsg)
 	const char *init_iter = m_iter;
 	while(!is_end(m_iter))
 	{
-	    if((!token_detail::is_letter_or_digit(const char_t c)) && ('_'!=m_iter))
+	    if((!token_detail::is_letter_or_digit(*m_iter)) && ('_'!=*m_iter))
 			break;
 
 		++m_iter;
@@ -310,7 +333,7 @@ int LexAnalyzer::scan_symbol(ST_TOKEN *token, int *errCode, char *szMsg)
 
 	token->token_type = TKN_SYMBOL;
 	strncpy(token->token_value, init_iter, std::distance(m_iter, init_iter));
-	token->pos = std::distance(init_iter, m_expression_str);
+	token->pos = std::distance(init_iter, (const char *)m_expression_str);
 	return SUCC_CODE;
 }
 
@@ -326,7 +349,7 @@ int LexAnalyzer::scan_string(ST_TOKEN *token, int *errCode, char *szMsg)
 	if(is_end(m_iter))
 		return -1;
 	LexerStatus lex_status = INIT_STATUS;
-	if('\''==*m_iter!)
+	if('\''==*m_iter)
 	{
 		lex_status = IN_STR_SINGLE_QUOTE;
 		++m_iter;
@@ -341,7 +364,7 @@ int LexAnalyzer::scan_string(ST_TOKEN *token, int *errCode, char *szMsg)
 	const char *init_iter = m_iter;
 	if(IN_STR_SINGLE_QUOTE==lex_status)//单引号包括字符串
 	{
-	    while(!is_end(*m_iter))
+	    while(!is_end(m_iter))
 	    {
 	        if('\''==*m_iter)//另一个单引号
 				break;
@@ -353,7 +376,7 @@ int LexAnalyzer::scan_string(ST_TOKEN *token, int *errCode, char *szMsg)
 	}
 	else if(IN_STR_DOUBLE_QUOTE==lex_status)//双括号包括字符串
 	{
-	    while(!is_end(*m_iter))
+	    while(!is_end(m_iter))
 	    {
 	        if('"'==*m_iter)//另一个单引号
 				break;
@@ -365,7 +388,7 @@ int LexAnalyzer::scan_string(ST_TOKEN *token, int *errCode, char *szMsg)
 	}
 	else
 	{
-	    while(!is_end(*m_iter))
+	    while(!is_end(m_iter))
 	    {
 	        if(token_detail::is_whitespace(*m_iter))
 				break;
@@ -376,20 +399,21 @@ int LexAnalyzer::scan_string(ST_TOKEN *token, int *errCode, char *szMsg)
 	    }
 	}
 
-    if((IN_STR_SINGLE_QUOTE==lex_status) || if(IN_DOUBLE_QUOTE==lex_status))
+    if((IN_STR_SINGLE_QUOTE==lex_status)||(IN_STR_DOUBLE_QUOTE==lex_status))
     {
 	    token->token_type = TKN_STRING;
 	    strncpy(token->token_value, init_iter, std::distance(m_iter, init_iter));
-	    token->pos = std::distance(init_iter, m_expression_str);
+	    token->pos = std::distance(init_iter, (const char *)m_expression_str);
     }
 	else
 	{
 	    token->token_type = TKN_CONST_STR;
 	    strncpy(token->token_value, init_iter, std::distance(m_iter, init_iter));
-	    token->pos = std::distance(init_iter, m_expression_str);
+	    token->pos = std::distance(init_iter, (const char *)m_expression_str);
     }
 	return SUCC_CODE;
 }
+
 
 
 

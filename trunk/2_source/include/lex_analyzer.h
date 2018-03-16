@@ -2,6 +2,7 @@
 #define __LEX_ANALYZER_H_
 
 #include "token_define.h"
+#include "token_detail.hpp"
 
 #define SUCC_CODE 0
 #define ERR_CODE -1
@@ -20,15 +21,18 @@ typedef enum {
 class LexAnalyzer
 {
   public:
-    LexAnalyzer(char *express_str=NULL);
+    LexAnalyzer(char *express_st);
     
     //设置表达式
     int set_expression(char *express_str);
     //获取下一个token
-    int get_next_token(ST_TOKEN *token);
+    int get_next_token(ST_TOKEN *token, int *errCode, char *szMsg);
   public:
   	//另一种扫描获取token方式
   	int scan_token();
+	int scan_operator(ST_TOKEN *token, int *errCode, char *szMsg);
+	int scan_symbol(ST_TOKEN *token, int *errCode, char *szMsg);
+	int scan_string(ST_TOKEN *token, int *errCode, char *szMsg);
   private:
   	bool is_end(const char *iter)
   	{

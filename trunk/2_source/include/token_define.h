@@ -11,9 +11,8 @@
 typedef enum {
     TKN_NONE,//不是任何token
     TKN_BAD,
-    TKN_AND,
-    TKN_OR,
-    TKN_NOT,
+    
+    TKN_AND, TKN_OR, TKN_NOT,
     
     TKN_GT,
     TKN_GE,
@@ -22,12 +21,14 @@ typedef enum {
     TKN_NE,
     TKN_EQ,
     TKN_FUZZY,
-    TKN_SYMBOL, //变量,以$开头
+
+	TKN_SYMBOL, //变量,以$开头
     TKN_CONST_STR,  //常量,无类型,即词法解析器无法确定是symbol还是字符串
     TKN_STRING,//字符串,使用单引号或双引号
     TKN_PARENTHESE_LEFT, //'('
-    TKN_PARENTHESE__RIGHT, //'('
+    TKN_PARENTHESE_RIGHT, //')'
 
+	TKN_EOF,//结束符,';'
 	TKN_ERR_SYMBOL,//错误符号
 }TokenKind;
 
